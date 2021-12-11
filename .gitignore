@@ -1,0 +1,5 @@
+.env
+artifacts/
+cache/
+node_modules/
+deployments/31337/

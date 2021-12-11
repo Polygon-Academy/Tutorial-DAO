@@ -1,0 +1,15 @@
+[
+  "event Join(address indexed user, uint256 amount)",
+  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  "event Quit(address indexed user, uint256 amount)",
+  "event Withdrawal(address indexed user, uint256 amount)",
+  "function appayFund(address receiver, uint256 amount)",
+  "function daotoken() view returns (address)",
+  "function isOwner() view returns (bool)",
+  "function join(uint256 amount)",
+  "function owner() view returns (address)",
+  "function quit()",
+  "function renounceOwnership()",
+  "function transferOwnership(address newOwner)",
+  "function usdt() view returns (address)"
+]
