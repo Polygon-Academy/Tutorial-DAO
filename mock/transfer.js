@@ -11,7 +11,7 @@ async function getUSDC() {
 
 async function main() {
   let usdc = await getUSDC();
-  usdc.transfer("0x6cc67A6D136ED539d6505C545240Cf99aD1396fB", ethers.utils.formatEther(1));
+  usdc.transfer("0x6cc67A6D136ED539d6505C545240Cf99aD1396fB", ethers.utils.parseEther(1));
 }
 
 main()
