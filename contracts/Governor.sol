@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 import "./IDaoToken.sol";
@@ -11,10 +12,10 @@ contract Governor {
     /// @dev The maximum number of actions that can be included in a proposal
     uint constant MAX_ACTIONS = 10;
     
-    uint constant VOTE_PERIOD = 7 days;  //  7 days
+    uint constant VOTE_PERIOD = 10;
 
      /// @dev The delay before voting on a proposal may take place, once proposed
-    uint constant VOTING_DELAY = 1;
+    uint constant VOTING_DELAY = 0;
 
     /// @dev The number of votes required in order for a voter to become a proposer
     uint constant PROPOSAL_THRESHOLD = 1;
@@ -48,8 +49,8 @@ contract Governor {
         //  The block at which voting begins: holders must delegate their votes prior to this block
         uint startBlock;
 
-        //  The TimeStamp at which voting ends: votes must be cast prior to this timestap
-        uint endTs;
+        //  The block at which voting ends: votes must be cast prior to this timestap
+        uint endBlock;
 
         // Current number of votes in favor of this proposal
         uint forVotes;
@@ -99,7 +100,7 @@ contract Governor {
     bytes32 public constant BALLOT_TYPEHASH = keccak256("Ballot(uint256 proposalId,bool support)");
 
     /// @notice An event emitted when a new proposal is created
-    event ProposalCreated(uint id, address proposer, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, uint startBlock, uint endTs, string description);
+    event ProposalCreated(uint id, address proposer, address[] targets, uint[] values, string[] signatures, bytes[] calldatas, uint startBlock, uint endBlock, string description);
 
     /// @notice An event emitted when a vote has been cast on a proposal
     event VoteCast(address voter, uint proposalId, bool support, uint votes);
@@ -107,7 +108,7 @@ contract Governor {
     /// @notice An event emitted when a proposal has been executed
     event ProposalExecuted(uint id, uint eta);
 
-    constructor(address _token) public {
+    constructor(address _token) {
         token = IDaoToken(_token);
         domainSeparator = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name)), block.chainid, address(this)));
     }
@@ -126,7 +127,7 @@ contract Governor {
         }
 
         uint startBlock = block.number + VOTING_DELAY ;
-        uint endTs = block.timestamp + VOTE_PERIOD;
+        uint endBlock = block.number + VOTE_PERIOD;
 
         proposalCount++;
         Proposal storage newProposal = proposals[proposalCount];
@@ -138,7 +139,7 @@ contract Governor {
         newProposal.signatures = signatures;
         newProposal.calldatas = calldatas;
         newProposal.startBlock = startBlock;
-        newProposal.endTs = endTs;
+        newProposal.endBlock = endBlock;
         newProposal.forVotes = 0;
         newProposal.againstVotes = 0;
         newProposal.executed = false;
@@ -146,7 +147,7 @@ contract Governor {
 
         latestProposalIds[newProposal.proposer] = newProposal.id;
 
-        emit ProposalCreated(newProposal.id, msg.sender, targets, values, signatures, calldatas, startBlock, endTs, description);
+        emit ProposalCreated(newProposal.id, msg.sender, targets, values, signatures, calldatas, startBlock, endBlock, description);
         return newProposal.id;
     }
 
@@ -189,7 +190,7 @@ contract Governor {
         Proposal storage proposal = proposals[proposalId];
         if (block.number <= proposal.startBlock) {
             return ProposalState.Pending;
-        } else if (block.timestamp <= proposal.endTs) {
+        } else if (block.number <= proposal.endBlock) {
             return ProposalState.Active;
         } else if (proposal.forVotes <= proposal.againstVotes) {
             return ProposalState.Defeated;

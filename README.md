@@ -1,5 +1,11 @@
 # Tutorial-DAO
 
+## Instruction
+
+FundDao: Hold & Manage Fund, The Miner of DaoToken.
+DaoToken: A ERC20 Token for Governor.
+Governor: The Owner of FundDao, Control the FundDao.
+
 ## Deploy Contract
 1. create .env file with content:
 

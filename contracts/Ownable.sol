@@ -1,6 +1,5 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-
-import "./Context.sol";
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -11,7 +10,7 @@ import "./Context.sol";
  * `onlyOwner`, which can be applied to your functions to restrict their use to
  * the owner.
  */
-abstract contract Ownable is Context {
+abstract contract Ownable {
     address private _owner;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -20,7 +19,7 @@ abstract contract Ownable is Context {
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
     constructor () {
-        _owner = _msgSender();
+        _owner = msg.sender;
         emit OwnershipTransferred(address(0), _owner);
     }
 
@@ -43,7 +42,7 @@ abstract contract Ownable is Context {
      * @dev Returns true if the caller is the current owner.
      */
     function isOwner() public view returns (bool) {
-        return _msgSender() == _owner;
+        return msg.sender == _owner;
     }
 
     /**
