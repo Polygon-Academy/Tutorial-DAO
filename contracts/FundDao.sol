@@ -42,7 +42,7 @@ contract FundDao is Ownable {
     require(share >= 0, "Not Member");
 
     uint balance = IERC20(usdt).balanceOf(address(this));
- 
+
     uint amount = share * balance / daotoken.totalSupply() ;
     emit Quit(user, amount);
     daotoken.burn(user, uint96(share));

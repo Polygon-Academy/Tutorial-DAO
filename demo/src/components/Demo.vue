@@ -121,7 +121,9 @@ export default {
 
     join() {
       let amount = ethers.utils.parseUnits(this.amount, 18);
-      this.fundDao.join(amount);
+      this.fundDao.join(amount).then(() => {
+        this.getBalance();
+      })
     },
 
     proposeFund() {
@@ -130,10 +132,10 @@ export default {
       let iface = new ethers.utils.Interface(["function appayFund(address receiver, uint256 amount)"])
       const data = iface.encodeFunctionData("appayFund", [this.account, amount]);
       console.log("calldata:" , data);
-      const desc = "Appay " + this.fundAmount +  " USDC"
+      const desc = "申请 " + this.fundAmount +  " USDC"
 
       this.gov.propose([this.fundDao.address],[0], [""], [data], desc, {from: this.account}).then(() => {
-        return this.governor.proposalCount();
+        return this.gov.proposalCount();
       }).then((id) => {
         this.getPropose(id);
       })
@@ -141,6 +143,7 @@ export default {
     },
 
     voteFor(id) {
+      console.log("id:" + id)
       this.gov.castVote(id, true).then(() => {
         this.getPropose(id);
       })
@@ -155,6 +158,7 @@ export default {
     execute(id) {
       this.gov.execute(id).then(() => {
         this.getPropose(id);
+        this.getBalance();
       })
     },
 
@@ -171,7 +175,7 @@ export default {
       let state = await this.gov.state(id);
       let myReceipt = await this.gov.getReceipt(id, this.account)
       // console.log("proposeInfo:", proposeInfo)
-      // console.log("state:", state)
+      console.log(id + " state: ", state)
       // console.log("myReceipt:", myReceipt)
 
        this.proposeList[proposeInfo.id] = {
